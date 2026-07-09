@@ -630,30 +630,6 @@ def render_cq(df, prb_thresh, view_mode):
                     st.plotly_chart(fig4,use_container_width=True)
 
 # ────────────────────────────────────────────
-# 모니터링 카드
-# ────────────────────────────────────────────
-def render_monitor_cards():
-    st.markdown('<div class="sec-title">🖥 모니터링 바로가기</div>', unsafe_allow_html=True)
-    cards = [
-        ("🔴","gREMS","장애 모니터링"),
-        ("📊","MIBOS","성능 현황"),
-        ("📡","EMS","장비 관리"),
-        ("📈","CQ Portal","체감품질"),
-        ("🗺","GIS","지도 현황"),
-        ("📋","보고서","주간 보고"),
-    ]
-    cols = st.columns(len(cards))
-    for i,(icon,name,desc) in enumerate(cards):
-        with cols[i]:
-            st.markdown(f"""
-            <div class="monitor-card">
-              <div class="icon">{icon}</div>
-              <div style="font-size:12px;font-weight:700;color:#c0d0e8">{name}</div>
-              <div class="label">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-# ────────────────────────────────────────────
 # 사이드바
 # ────────────────────────────────────────────
 with st.sidebar:
@@ -691,6 +667,11 @@ with st.sidebar:
         date_range = None
 
     st.markdown("---")
+    st.markdown("**🏢 국소 필터**")
+    st.caption("파일 업로드 후 선택 가능")
+    sidebar_site_placeholder = st.empty()
+
+    st.markdown("---")
     st.markdown("**⚙ 분석 설정**")
     prb_thresh = st.slider("PRB 불량 기준 (%)", 10, 70, 30, 5)
 
@@ -716,10 +697,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
-# 모니터링 카드 (항상 상단)
-render_monitor_cards()
-st.markdown("---")
 
 # ────────────────────────────────────────────
 # 파일 없으면 안내
@@ -758,6 +735,34 @@ for uf in uploaded_files:
 if not loaded:
     st.error("파일을 읽을 수 없습니다. 파일을 확인해 주세요.")
     st.stop()
+
+# ── 국소 필터 (파일 로드 후 사이드바에 동적으로 추가)
+NAME_COL_MAP = {'품질KPI': 'eqp_origin_nm', 'CEI': 'enb_name', 'CQ': 'cell_nm'}
+all_sites = []
+for _, df_tmp, ft_tmp in loaded:
+    nc = NAME_COL_MAP.get(ft_tmp, '')
+    if nc and nc in df_tmp.columns:
+        all_sites += df_tmp[nc].dropna().unique().tolist()
+all_sites = sorted(set(all_sites))
+
+sel_sites = []
+if all_sites:
+    sel_sites = sidebar_site_placeholder.multiselect(
+        "국소 선택 (전체=선택 안함)",
+        all_sites,
+        placeholder="전체 국소",
+        label_visibility='collapsed'
+    )
+
+# 국소 필터 적용
+if sel_sites:
+    filtered_loaded = []
+    for fname, df_f, ft_f in loaded:
+        nc = NAME_COL_MAP.get(ft_f, '')
+        if nc and nc in df_f.columns:
+            df_f = df_f[df_f[nc].isin(sel_sites)]
+        filtered_loaded.append((fname, df_f, ft_f))
+    loaded = filtered_loaded
 
 # ────────────────────────────────────────────
 # 파일별 탭
