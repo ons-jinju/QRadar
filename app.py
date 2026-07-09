@@ -126,11 +126,11 @@ div[data-baseweb="select"] > div{background:#1a2744!important;border-color:#2a3f
 INVALID = [-9999999, -9999999.0, -99.0, -99, -95.0, -95, -100.0, -100]
 HOURS = [f'{h:02d}' for h in range(24)]
 
-PLOT_COLORS = ['#3a8fff','#00e676','#ff6b6b','#ffa500','#b388ff','#00bcd4','#ff4081','#69f0ae']
+PLOT_COLORS = ['#00AAFF','#00FF88','#FF4444','#FFCC00','#CC44FF','#00E5FF','#FF6600','#AAFFCC']
 
 PLOTLY_LAYOUT = dict(
     paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(15,25,45,0.6)',
+    plot_bgcolor='rgba(10,18,35,0.95)',
     font=dict(color='#a0b8d8', family='Inter, Malgun Gothic', size=11),
     margin=dict(l=8, r=8, t=36, b=8),
     legend=dict(
@@ -460,7 +460,7 @@ def render_quality(df, prb_thresh, view_mode):
             sinr_df = df.groupby(nc)[sinr_cols].mean().reset_index().sort_values(sinr_cols[0])
             fig5 = px.bar(sinr_df.head(20), x=nc, y=sinr_cols[0], title='SINR PUCCH 평균 (하위 20, 낮을수록 불량)',
                          color=sinr_cols[0],
-                         color_continuous_scale=[[0,'#ff2200'],[0.5,'#ffa500'],[1,'#00e676']])
+                         color_continuous_scale=[[0,'#FF0033'],[0.35,'#FF6600'],[0.65,'#FFCC00'],[1,'#00FF88']])
             fig5.update_layout(**dict(**PLOTLY_LAYOUT, height=280, coloraxis_showscale=False))
             fig5.update_xaxes(tickangle=-35, tickfont=dict(size=9))
             st.plotly_chart(fig5, use_container_width=True)
@@ -469,7 +469,7 @@ def render_quality(df, prb_thresh, view_mode):
             inter_df = df.groupby(nc)[inter_col].mean().reset_index().sort_values(inter_col, ascending=False)
             fig6 = px.bar(inter_df.head(20), x=nc, y=inter_col, title='간섭전력 평균 (상위 20, 높을수록 불량)',
                          color=inter_col,
-                         color_continuous_scale=[[0,'#00e676'],[0.5,'#ffa500'],[1,'#ff2200']])
+                         color_continuous_scale=[[0,'#00FF88'],[0.35,'#FFCC00'],[0.65,'#FF6600'],[1,'#FF0033']])
             fig6.update_layout(**dict(**PLOTLY_LAYOUT, height=280, coloraxis_showscale=False))
             fig6.update_xaxes(tickangle=-35, tickfont=dict(size=9))
             st.plotly_chart(fig6, use_container_width=True)
@@ -485,7 +485,7 @@ def render_quality(df, prb_thresh, view_mode):
             fig7 = px.bar(cfi_df.sort_values('HDV CFI').head(20), x=nc, y='HDV CFI',
                          title='HDV CFI (하위 20)',
                          color='HDV CFI',
-                         color_continuous_scale=[[0,'#ff2200'],[0.5,'#ffa500'],[1,'#00e676']])
+                         color_continuous_scale=[[0,'#FF0033'],[0.35,'#FF6600'],[0.65,'#FFCC00'],[1,'#00FF88']])
             fig7.add_hline(y=80, line_dash='dash', line_color='#ff6b6b')
             fig7.update_layout(**dict(**PLOTLY_LAYOUT, height=280, coloraxis_showscale=False))
             fig7.update_xaxes(tickangle=-35, tickfont=dict(size=9))
@@ -495,7 +495,7 @@ def render_quality(df, prb_thresh, view_mode):
                 fig8 = px.bar(cfi_df.sort_values('DATA CFI').head(20), x=nc, y='DATA CFI',
                              title='DATA CFI (하위 20)',
                              color='DATA CFI',
-                             color_continuous_scale=[[0,'#ff2200'],[0.5,'#ffa500'],[1,'#00e676']])
+                             color_continuous_scale=[[0,'#FF0033'],[0.35,'#FF6600'],[0.65,'#FFCC00'],[1,'#00FF88']])
                 fig8.add_hline(y=80, line_dash='dash', line_color='#ff6b6b')
                 fig8.update_layout(**dict(**PLOTLY_LAYOUT, height=280, coloraxis_showscale=False))
                 fig8.update_xaxes(tickangle=-35, tickfont=dict(size=9))
@@ -540,7 +540,7 @@ def render_cei(df, prb_thresh, view_mode):
                 if not bad.empty:
                     fig = px.bar(bad, x=nc, y=col, title=f'{labels.get(col,col)} 불량 국소 (80점 미만)',
                                 color=col,
-                                color_continuous_scale=[[0,'#ff2200'],[0.5,'#ffa500'],[1,'#00e676']])
+                                color_continuous_scale=[[0,'#FF0033'],[0.35,'#FF6600'],[0.65,'#FFCC00'],[1,'#00FF88']])
                     fig.add_hline(y=80,line_dash='dash',line_color='#ff6b6b')
                     fig.update_layout(**dict(**PLOTLY_LAYOUT,height=260,coloraxis_showscale=False))
                     fig.update_xaxes(tickangle=-35,tickfont=dict(size=9))
@@ -617,7 +617,7 @@ def render_cq(df, prb_thresh, view_mode):
             with c1:
                 fig3 = px.pie(values=total_grades.values, names=total_grades.index,
                              title='전체 CQ 등급 분포',
-                             color_discrete_sequence=['#3a8fff','#00e676','#ffa500','#ff6b6b','#cc0000'])
+                             color_discrete_sequence=['#00AAFF','#00FF88','#FFCC00','#FF4444','#FF0033'])
                 fig3.update_layout(**dict(**PLOTLY_LAYOUT, height=300))
                 st.plotly_chart(fig3,use_container_width=True)
             with c2:
@@ -625,7 +625,7 @@ def render_cq(df, prb_thresh, view_mode):
                     gd2 = df.groupby('_일자')[grade_cols].sum().reset_index()
                     fig4 = px.bar(gd2, x='_일자', y=grade_cols, barmode='stack',
                                  title='일별 CQ 등급 건수',
-                                 color_discrete_sequence=['#3a8fff','#00e676','#ffa500','#ff6b6b','#cc0000'])
+                                 color_discrete_sequence=['#00AAFF','#00FF88','#FFCC00','#FF4444','#FF0033'])
                     fig4.update_layout(**dict(**PLOTLY_LAYOUT, height=300))
                     st.plotly_chart(fig4,use_container_width=True)
 
