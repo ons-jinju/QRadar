@@ -47,7 +47,7 @@ html,body,[class*="css"]{font-family:'Inter','Malgun Gothic',sans-serif;font-siz
     background:#00e676;box-shadow:0 0 8px #00e676;margin-right:6px;
     animation:pulse 2s infinite
 }
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes pulse{0%{{opacity:1}}50%{{opacity:0.4}}100%{{opacity:1}}}
 .sec-title{
     font-size:0.82rem;font-weight:700;color:#a0b8d8;
     border-left:3px solid #3a8fff;padding-left:10px;
